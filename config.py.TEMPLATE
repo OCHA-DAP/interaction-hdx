@@ -1,0 +1,7 @@
+# Copy this file to config.py, and fill in the values below
+
+CONFIG = {
+    'creator': '<CKAN USERNAME>', # example: 'janesmith'
+    'ckanurl': 'https://data.hdx.rwlabs.org', # example: 'https://test-data.hdx.rwlabs.org'
+    'apikey': '<CKAN USER API KEY>' # example: '00000000-aaaa-1111-bbbb-222222cccccc'
+}
