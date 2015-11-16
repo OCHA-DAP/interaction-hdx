@@ -8,32 +8,42 @@ See README.md for more details.
 Started 2015-11-16 by David Megginson
 """
 
-import config
-
 import ckanapi
 import hxl
 import urllib
 
-import pprint
+# read configuration values from config.py
+import config
 
 #
 # Constants
 #
+
 INPUTS_URL = 'https://docs.google.com/spreadsheets/d/1TfDOvNysztJCMLc0-EjnC2MpnYlpiVO0eio6XkT8V6I/edit#gid=0'
 RESOURCE_URL_TEMPLATE = 'http://ngoaidmap.org/downloads?doc={format}&geolocation={code}&level=0&name={filename}&status=active'
 
 
+#
+# Create the CKAN API object
+#
 ckan = ckanapi.RemoteCKAN(config.CONFIG['ckanurl'], apikey=config.CONFIG['apikey'])
 
+#
+# Loop through every HXL data row in the source spreadsheet (INPUTS_URL)
+#
+
 for row in hxl.data(INPUTS_URL, True):
+
     country = row.get('country+name+interaction')
     hdx_code = row.get('country+code+m49')
     interaction_code = row.get('country+code+interaction')
     stub = 'ngoaidmap-{code}'.format(code=hdx_code.lower())
 
+    # Skip if there's no M49 code for HDX
     if not hdx_code:
         continue
-    
+
+    # Create the basic dataset object, with an empty list of resources
     dataset = {
         'name': stub,
         'title': 'InterAction member activities in {country}'.format(country=country),
@@ -51,6 +61,7 @@ for row in hxl.data(INPUTS_URL, True):
         'resources': []
     }
 
+    # Add resources to the dataset
     for format in ['csv', 'xls', 'kml']:
         dataset['resources'].append({
             'name': 'List of activities in {country}'.format(country=country),
@@ -61,6 +72,7 @@ for row in hxl.data(INPUTS_URL, True):
             'format': format
             })
 
+    # Try creating the dataset on CKAN, and if that fails, update instead
     try:
         ckan.call_action('package_create', dataset)
         print("Created {stub}...".format(stub=stub))
@@ -69,3 +81,5 @@ for row in hxl.data(INPUTS_URL, True):
         print("Updated {stub}...".format(stub=stub))
 
 exit(0)
+
+# end
