@@ -26,7 +26,7 @@ RESOURCE_URL_TEMPLATE = 'http://ngoaidmap.org/downloads?doc={format}&geolocation
 #
 # Create the CKAN API object
 #
-ckan = ckanapi.RemoteCKAN(config.CONFIG['ckanurl'], apikey=config.CONFIG['apikey'])
+ckan = ckanapi.RemoteCKAN(config.CONFIG['ckanurl'], apikey=config.CONFIG['apikey'], user_agent=config.CONFIG['user_agent'])
 
 #
 # Loop through every HXL data row in the source spreadsheet (INPUTS_URL)
@@ -34,14 +34,15 @@ ckan = ckanapi.RemoteCKAN(config.CONFIG['ckanurl'], apikey=config.CONFIG['apikey
 
 for row in hxl.data(INPUTS_URL, True):
 
-    country = row.get('country+name+interaction')
+    # Skip if there's no M49 code for HDX
     hdx_code = row.get('country+code+m49')
+    if not hdx_code:
+        continue
+
+    country = row.get('country+name+interaction')
     interaction_code = row.get('country+code+interaction')
     stub = 'ngoaidmap-{code}'.format(code=hdx_code.lower())
 
-    # Skip if there's no M49 code for HDX
-    if not hdx_code:
-        continue
 
     # Create the basic dataset object, with an empty list of resources
     dataset = {
@@ -50,19 +51,20 @@ for row in hxl.data(INPUTS_URL, True):
         'notes': 'List of aid activities by InterAction members in {country}. '
                  'Source: http://ngoaidmap.org/location/{code}'.format(country=country, code=interaction_code),
         'dataset_source': 'InterAction NGO Aid Map',
+        'private': False,
         'owner_org': 'interaction',
         'package_creator': 'script',
         'license_id': 'Public Domain',
         'methodology': 'Survey',
         'caveats': 'Unverified live data. May change at any time. '
                    'For information on data limitations, visit http://ngoaidmap.org/p/data',
-        'groups': [hdx_code],
-        'tags': ['3w', 'ngo'],
+        'groups': [{'id': hdx_code.lower()}],
+        'tags': [{'name': '3w'}, {'name': 'ngo'}],
         'resources': []
     }
 
     # Add resources to the dataset
-    for format in ['csv', 'xls', 'kml']:
+    for format in ['csv', 'xls']:
         dataset['resources'].append({
             'name': 'List of activities in {country}'.format(country=country),
             'description': 'Spreadsheet listing InterAction member activities in {country}. '
