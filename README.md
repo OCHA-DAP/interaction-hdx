@@ -10,5 +10,5 @@
 ## Instructions
 
 1. Copy the file config.py.TEMPLATE to config.py and fill in the fields
-2. Execute the command ``python3 create-popstats-datasets.py``
+2. Execute the command ``python3 create-interaction-datasets.py``
 
