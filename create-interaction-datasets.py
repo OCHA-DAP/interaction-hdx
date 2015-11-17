@@ -26,7 +26,7 @@ RESOURCE_URL_TEMPLATE = 'http://ngoaidmap.org/downloads?doc={format}&geolocation
 #
 # Create the CKAN API object
 #
-ckan = ckanapi.RemoteCKAN(config.CONFIG['ckanurl'], apikey=config.CONFIG['apikey'], user_agent=config.CONFIG['user_agent'])
+ckan = ckanapi.RemoteCKAN(config.CONFIG['ckanurl'], apikey=config.CONFIG['apikey'], user_agent=config.CONFIG.get('user_agent', None))
 
 #
 # Loop through every HXL data row in the source spreadsheet (INPUTS_URL)
