@@ -23,6 +23,11 @@ INPUTS_URL = 'https://docs.google.com/spreadsheets/d/1TfDOvNysztJCMLc0-EjnC2MpnY
 RESOURCE_URL_TEMPLATE = 'http://ngoaidmap.org/downloads?doc={format}&geolocation={code}&level=0&name={filename}&status=active'
 
 
+def q(s):
+    """Quote a parameter for a URL."""
+    return urllib.parse.quote(s)
+
+
 #
 # Create the CKAN API object
 #
@@ -49,7 +54,7 @@ for row in hxl.data(INPUTS_URL, True):
         'name': stub,
         'title': 'InterAction member activities in {country}'.format(country=country),
         'notes': 'List of aid activities by InterAction members in {country}. '
-                 'Source: http://ngoaidmap.org/location/{code}'.format(country=country, code=interaction_code),
+                 'Source: http://ngoaidmap.org/location/{code}'.format(country=country, code=q(interaction_code)),
         'dataset_source': 'InterAction NGO Aid Map',
         'private': False,
         'owner_org': 'interaction',
@@ -70,7 +75,10 @@ for row in hxl.data(INPUTS_URL, True):
             'description': 'Spreadsheet listing InterAction member activities in {country}. '
                            'Unverified member-uploaded data. '
                            'Note that this data comes live from the web site, and can change at any time.'.format(country=country),
-            'url': RESOURCE_URL_TEMPLATE.format(format=format, code=interaction_code, filename='activities'.format(format=format)),
+            'url': RESOURCE_URL_TEMPLATE.format(
+                format=q(format), 
+                code=q(interaction_code), 
+                filename=q('activities'.format(format=format))),
             'format': format
             })
 
