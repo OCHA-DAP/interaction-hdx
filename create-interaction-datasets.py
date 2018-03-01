@@ -69,6 +69,7 @@ for row in hxl.data(INPUTS_URL, True):
         'dataset_source': 'InterAction NGO Aid Map',
         'private': False,
         'owner_org': 'interaction',
+        'maintainer': 'eyox',
         'package_creator': 'script',
         'license_id': 'Public Domain',
         'methodology': 'Survey',
